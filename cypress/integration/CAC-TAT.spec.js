@@ -1,5 +1,7 @@
 /// <reference types="Cypress" />
 
+// Exercícios realizados com os comandos .visit/ .get/ .type/ .should/ .contains/.
+
 describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício 00
     beforeEach(function() {
         cy.visit('./src/index.html')
@@ -15,7 +17,7 @@ describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício
         cy.get('#firstName').type('Lucas')
         cy.get('#lastName').type('Barros')
         cy.get('#email').type('cypress@gmail.com')
-        cy.get('#open-text-area').type(longTest, {delay: 0})
+        cy.get('#open-text-area').type(longTest, {delay: 25})
 
         cy.contains('button', 'Enviar').click()
         cy.get('.success').should('be.visible')
@@ -87,7 +89,56 @@ describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício
         cy.get('.success').should('be.visible')
     })
 
-    it('utilizando comando cy.contains', function(){        // Exercício extra 08
+    it('utilizando comando cy.contains', function() {        // Exercício extra 08
         cy.contains('button', 'Enviar').click()
     })
+
+// Exercícios utlilizando comando Select utilizando valores, índice e texto.
+
+    it('selecionando um produto youtube', function() {          // Exercício 00
+        cy.get('#product')
+        .select("YouTube")
+        .should('have.value', 'youtube')
+    })
+
+    it('selecionando um produto mentoria', function() {         // Exercício extra 01
+        cy.get('#product')
+        .select('mentoria')
+        .should('have.value', 'mentoria')
+    })
+
+    it('selecionando um produto Blog', function() {        // Exercício extra 02
+        cy.get('#product')
+        .select(1)
+        .should('have.value', 'blog')
+    })
+
+// Exercício realizado com o comando .check em campos RADIO's
+
+    it('marca o tipo de atendimento "Feedback"', function() {       // Exercício 00
+        cy.get('input[type="radio"][value="feedback"]').check().should('have.value', 'feedback')
+    })
+
+    it('marca cada tipo de atendimento', function() {       // Exercício extra 01
+        cy.get('input[type="radio"]')
+        .should('have.length', 3)
+        .each(function($radio){
+            cy.wrap($radio).check()
+            cy.wrap($radio).should('be.checked')
+        })
+    })
+
+    it('marca ambos checkboxes, depois desmarca o último', function(){         // Exercício 00
+        cy.get('input[type="checkbox"]')
+        .check().should('be.checked')
+        .last()
+        .uncheck()
+        .should('not.be.checked')
+    })
+
+    it('exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário com comando CHECK', function() {      // Exercício extra 01
+        cy.get('input[type="checkbox"][value="phone"]')
+        .check()
+        .should('be.checked')
+    })    
 })
