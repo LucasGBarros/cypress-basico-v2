@@ -1,7 +1,7 @@
 # Testes automatizados com Cypress - Básico
 👋 Seja bem-vindo(a)!
 
-O que você vai aprendi:
+O que eu aprendi:
 - Como configurar um projeto Cypress do zero
 - Como visitar páginas locais e remotas
 - Como lidar com os elementos mais comuns encontrados em aplicações web
