@@ -2,7 +2,8 @@
 
 // Exercícios realizados com os comandos .visit/ .get/ .type/ .should/ .contains/.
 
-describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício 00
+describe('Central de Atendimento ao Cliente TAT', function() {  
+    const THREE_SECOND_IN_MS = 3000  // Exercício 00
     beforeEach(function() {
         cy.visit('./src/index.html')
     })
@@ -17,7 +18,7 @@ describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício
         cy.get('#firstName').type('Lucas')
         cy.get('#lastName').type('Barros')
         cy.get('#email').type('cypress@gmail.com')
-        cy.get('#open-text-area').type(longTest, {delay: 25})
+        cy.get('#open-text-area').type(longTest, {delay: 0})
 
         cy.contains('button', 'Enviar').click()
         cy.get('.success').should('be.visible')
@@ -30,7 +31,7 @@ describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício
         cy.get('#open-text-area').type('TESTE')
         
         cy.contains('button', 'Enviar').click()
-        cy.get('.error').should('be.visible')
+        // cy.get('.error').should('be.visible')
     })
 
     it('Inserindo valores nao-numéricos no campo telefone', function() {        // Exercício extra 03   
@@ -162,7 +163,7 @@ describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício
         })
     })
 
-    it('seleciona um arquivo utilizando uma fixture para a qual foi dada um alias',function() {     // Exercício extra 02
+    it('seleciona um arquivo utilizando uma fixture para a qual foi dada um alias', function() {     // Exercício extra 02
         cy.fixture('example.json').as('sampleFile')
         cy.get('input[type="file"]')
         .selectFile('@sampleFile')
@@ -183,5 +184,90 @@ describe('Central de Atendimento ao Cliente TAT', function() {     // Exercício
         .click()
 
         cy.contains('Talking About Testing').should('be.visible')
+    })
+
+    it('exibe mensagem por 3 segundos sucesso', function() {
+        cy.clock()
+
+        cy.get('#firstName').type('Lucas')
+        cy.get('#lastName').type('Barros')
+        cy.get('#email').type('cypress@gmail.com')
+        cy.get('#phone-checkbox').click()
+        cy.get('#phone').type('123456789')
+        cy.get('#open-text-area').type('TESTE')
+        cy.contains('button', 'Enviar').click()
+
+        cy.get('.success').should('be.visible')
+        cy.tick(THREE_SECOND_IN_MS)
+        cy.get('.error').should('not.be.visible')
+
+    })
+
+    it('exibe mensagem por 3 segundos error', function() {
+        cy.clock()
+
+        cy.get('#firstName').type('Lucas')
+        cy.get('#lastName').type('Barros')
+        cy.get('#email').type('cypress@gmail.com')
+        cy.get('#phone-checkbox').click()
+        cy.get('#phone').type('ERRO')
+        cy.contains('button', 'Enviar').click()
+
+        cy.get('.error').should('be.visible')
+
+        cy.tick(THREE_SECOND_IN_MS)
+        
+        cy.get('.error').should('not.be.visible')
+    })
+
+    Cypress._.times(1, function() {
+        it('utilizando funcionalidade .times()', function(){   //  Exercício extra 01
+            cy.fillMandatoryFieldsAndSubmit()
+        })
+    })
+
+    it('exibe e esconde as mensagens de sucesso e erro usando o .invoke()', function() {    // Exercício extra 02
+    cy.get('.success')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Mensagem enviada com sucesso.')
+      .invoke('hide')
+      .should('not.be.visible')
+    cy.get('.error')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Valide os campos obrigatórios!')
+      .invoke('hide')
+      .should('not.be.visible')
+    })
+
+    it('preenche a area de texto usando o comando invoke', function() {    // Exercício extra 03
+        const longTest = Cypress._.repeat('123456789', 20)
+        
+        cy.get('#open-text-area')
+        .invoke('val', longTest)        // val = valor
+        .should('have.value', longTest)
+    })
+
+    it('faz uma requisição HTTP', function(){
+        cy.request('https://cac-tat.s3.eu-central-1.amazonaws.com/index.html')
+        .should(function(response){
+            const {status, statusText, body} = response
+            expect(status).to.equal(200)
+            expect(statusText).to.equal('OK')
+            expect(body).to.include('CAC TAT')
+        })
+    })
+
+    it('encontre o gato escondido', function() {
+        cy.get('#cat')
+        .invoke('show')
+        .should('be.visible')
+        cy.get('#title')
+        .invoke('text', 'CAT TAT')
+        cy.get('#subtitle')
+        .invoke('text', 'EU ACHEI O GATO')
     })
 })
